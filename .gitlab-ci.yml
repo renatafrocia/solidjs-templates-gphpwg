@@ -1,0 +1,93 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  SERVER_PORT: 103
+  SERVER_USER: primer
+  SERVER_HOST: static.118.168.132.142.clients.your-server.de
+
+cache:
+  paths:
+    - node_modules/
+
+build:
+  stage: build
+  before_script:
+    - apt-get update && apt-get install -y nodejs npm
+    - npm install -g typescript
+  script:
+    - npm install
+    - npm run build
+
+deploy:
+  stage: deploy
+  before_script:
+    - apt-get update
+    - apt-get install -y sshpass
+  script:
+    - echo "Starting deployment script..."
+    - SERVER_USER=$SERVER_USER
+    - SERVER_HOST=$SERVER_HOST
+    - SERVER_PORT=$SERVER_PORT
+
+    - mkdir -p ~/.ssh
+    - |
+      cat << 'EOF' > ~/.ssh/id_rsa
+      -----BEGIN OPENSSH PRIVATE KEY-----
+      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
+      -----END OPENSSH PRIVATE KEY-----
+
+      EOF
+    - chmod 600 ~/.ssh/id_rsa
+    - echo "Testing SSH connection and executing deployment commands..."
+
+    - ssh -i ~/.ssh/id_rsa -p "$SERVER_PORT" -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_HOST" "echo Connection successful" || (echo "SSH connection failed" && exit 1)
+
+    - |
+      ssh -i ~/.ssh/id_rsa -p "$SERVER_PORT" -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_HOST" <<EOF
+      cd /primer/primer-evaluation-frontend
+      git pull origin main
+      npm install
+      npm run build
+      exit
+      EOF
+    - echo "Deployment script completed."
+  only:
+    - main
